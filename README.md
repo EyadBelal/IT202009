@@ -2,3 +2,5 @@
 ## Eyad Belal
 
 My first repository 
+
+git status
