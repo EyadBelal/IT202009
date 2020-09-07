@@ -3,4 +3,3 @@
 
 My first repository 
 
-git status
