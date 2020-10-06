@@ -21,31 +21,42 @@ if(isset($_POST["login"])){
   if(!isset($email) || !isset($password)){
    $isValid = false; 
   }
-  //TODO other validation as desired, remember this is the last line of defense
-  //here you'd probably want some email validation, for sake of example let's do a super basic one
   if(!strpos($email, "@")){
    $isValid = false;
     echo "<br>Invalid email<br>";
   }
   if($isValid){
-    //for password matching, we can't use this, every time it's ran it'll be a different value
-    //so will never log us in!
-    //$hash = password_hash($password, PASSWORD_BCRYPT);
-    //instead we'll want to run password_verify
-    //TODO pretend we got our use from the DB
-    //make sure if you're pasting a sample hash here that you use single quotes
-    //if you use double quotes it'll try to parse values with $ as a php variable
-    //and the sample won't work
-    $password_hash_from_db = '';//placeholder, you can copy/paste a hash generated from sample_reg.php if you want to test it
-    //otherwise it'll always be false
-    
-    //note it's raw password, saved hash as the parameters
-    if(password_verify($password, $password_hash_from_db)){
-     echo "<br>Welcome! You're logged in!<br>"; 
-    }
-    else{
-     echo "<br>Invalid password, get out!<br>"; 
-    }
+    require_once(__DIR__."/../lib/db.php");
+    $db = getDB();
+	if(isset($db)){
+		$stmt = $db->prepare("SELECT id, email, password from Users WHERE email = :email LIMIT 1");
+		
+		$params = array(":email"=>$email);
+		$r = $stmt->execute($params);
+		echo "db returned: " . var_export($r, true);
+		$e = $stmt->errorInfo();
+		if($e[0] != "00000"){
+			echo "uh oh something went wrong: " . var_export($e, true);
+		}
+		$result = $stmt->fetch(PDO::FETCH_ASSOC);
+		if($result && isset($result["password"])){
+			$password_hash_from_db = $result["password"];
+			if(password_verify($password, $password_hash_from_db)){
+        session_start();//we only need to active session when it's worth activating it
+        unset($result["password"]);//remove password so we don't leak it beyond this page
+        //let's create a session for our user based on the other data we pulled from the table
+        $_SESSION["user"] = $result;//we can save the entire result array since we removed password
+        //on successful login let's serve-side redirect the user to the home page.
+			  header("Location: home.php");
+			}
+			else{
+			 echo "<br>Invalid password, get out!<br>"; 
+			}
+		}
+		else{
+			echo "<br>Invalid user<br>";
+		}
+	}
   }
   else{
    echo "There was a validation issue"; 
