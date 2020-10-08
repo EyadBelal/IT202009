@@ -1,0 +1,2 @@
+dont forget config.php
+
