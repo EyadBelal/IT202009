@@ -5,9 +5,10 @@ CREATE TABLE IF NOT EXISTS `Products`
     `quantity`    int            default 0,
     `price`       decimal(10, 2) default 0.00,
     `description` TEXT,
-    `modified`    datetime       default current_timestamp on update current_timestamp,
-    `created`     datetime       default current_timestamp,
+    `modified`    TIMESTAMP       default current_timestamp on update current_timestamp,
+    `created`     TIMESTAMP      default current_timestamp,
     `user_id`     int,
-    `primary key` (id),
-    foreign key (`user_id`) references Users (`id`)
+    PRIMARY KEY ('id'),
+    FOREIGN KEY (`user_id`) REFERENCES Users (`id`),
+
 )
