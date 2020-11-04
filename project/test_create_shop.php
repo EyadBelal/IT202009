@@ -19,12 +19,6 @@ if (!has_role("Admin")) {
     <label> Description </label>
     <input type="text" desc="" name="description"/>
 
-    <label> Modified </label>
-    <input type="time" mod="current_time_stamp" name="modified"/>
-
-    <label> Created </label>
-    <input type="time" crea="current_time_stamp" name="created"/>
-
     <input type="submit" name="save" value="create"/>
 </form>
 
@@ -46,8 +40,9 @@ if(isset($_POST["save"])){
         ":amount"=>$quantity,
         ":cost"=>$price,
         ":desc"=>$description,
-        ":nst"=>$nst,
-        ":user"=>$user
+        ":user"=>$user,
+        ":nst"=>$nst
+        
     ]);
     if($r){
         flash("Created successfully with id: " . $db->lastInsertId());
