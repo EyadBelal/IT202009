@@ -35,19 +35,17 @@ if(isset($_POST["save"])){
     $amount = $_POST["quantity"];
     $cost= $_POST["price"];
     $desc = $_POST["description"];
-    $mod= $_POST["modified"];
     $nst = date('Y-m-d H:i:s');//calc
     $user = get_user_id();
     $db = getDB();
 
 
-    $stmt = $db->prepare("INSERT INTO Products (name, quantity, price, description, modified, user_id) VALUES(:name, :amount, :cost, :desc,:mod,:nst,:user)");
+    $stmt = $db->prepare("INSERT INTO Products (name, quantity, price, description, user_id) VALUES(:name, :amount, :cost, :desc,:user)");
     $r = $stmt->execute([
         ":name"=>$name,
         ":amount"=>$quantity,
         ":cost"=>$price,
         ":desc"=>$description,
-        ":mod"=>$modified,
         ":nst"=>$nst,
         ":user"=>$user
     ]);
