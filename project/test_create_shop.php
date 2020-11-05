@@ -34,7 +34,7 @@ if(isset($_POST["save"])){
     $db = getDB();
 
 
-    $stmt = $db->prepare("INSERT INTO Products (name, quantity, price, description, user) VALUES(:name, :amount, :cost, :desc, :user)");
+    $stmt = $db->prepare("INSERT INTO Products (name, quantity, price, description) VALUES(:name, :amount, :cost, :desc)");
     $quantity = $amount;
     $price = $cost;
     $description = $desc;
@@ -43,7 +43,7 @@ if(isset($_POST["save"])){
         ":amount"=>$quantity,
         ":cost"=>$price,
         ":desc"=>$description,
-        ":user"=>$user,
+        
         
         
     ]);
