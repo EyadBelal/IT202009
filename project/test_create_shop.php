@@ -35,6 +35,9 @@ if(isset($_POST["save"])){
 
 
     $stmt = $db->prepare("INSERT INTO Products (name, quantity, price, description, user) VALUES(:name, :amount, :cost, :desc, :user)");
+    $quantity = $amount;
+    $price = $cost;
+    $description = $desc;
     $r = $stmt->execute([
         ":name"=>$name,
         ":amount"=>$quantity,
