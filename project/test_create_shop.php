@@ -40,9 +40,7 @@ if(isset($_POST["save"])){
         ":name"=>$name,
         ":quantity"=>$quantity,
         ":price"=>$price,
-        ":description"=>$description
-
-
+        ":description"=>$description,
 
     ]);
     if($r){
@@ -54,4 +52,8 @@ if(isset($_POST["save"])){
     }
 }
 ?>
+
 <?php require(__DIR__ . "/partials/flash.php");
+
+<?php require(__DIR__ . "/partials/flash.php");
+

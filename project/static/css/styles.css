@@ -1,6 +1,6 @@
 body {
-  background-color: lightblue;
-}
+  	background-color: lightblue;
+	}
 ul {
   list-style-type: none;
   margin: 0;
@@ -44,3 +44,12 @@ input[type=submit] {
     border-radius: 4px;
     cursor: pointer;
 }
+
+img {
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  padding: 5px;
+  width: 150px;
+}
+
+<img src="shoplogo.jpg" alt="logo">
