@@ -24,13 +24,14 @@ if(isset($_POST["save"])){
     $nst = date('Y-m-d H:i:s');//calc
     $db = getDB();
     if(isset($id)){
-        $stmt = $db->prepare("UPDATE Products set name=:name, quantity=:quantity, price=:price, description=:description where id=:id");
+        $stmt = $db->prepare("UPDATE Products set name=:name, user_id=:user, quantity=:quantity,  price=:price, description=:description where id=:id");
 
         $r = $stmt->execute([
             ":name"=>$name,
             ":quantity" => $quantity,
             ":price"=>$price,
             ":description"=>$description,
+            ":user"=>$user,
             ":id"=>$id
         ]);
         if($r){

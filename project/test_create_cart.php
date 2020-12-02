@@ -35,12 +35,12 @@ if (isset($_POST["save"])) {
         $db = getDB();
         $stmt = $db->prepare("SELECT id,price from Products WHERE id=:id");
         $r = $stmt->execute([":id" => $id]);
-        $productSelection = $stmt->fetch(PDO::FETCH_ASSOC);
+        $selectProduct= $stmt->fetch(PDO::FETCH_ASSOC);
     }
 
     $id = $_POST["product_id"];
     $quantity = $_POST["quantity"];
-    $price = $productSelection["price"];
+    $price = $selectProduct["price"];
     $user = get_user_id();
     $db = getDB();
     $stmt = $db->prepare("INSERT INTO Cart (product_id, quantity, price, user_id) VALUES(:id, :quantity, :price, :user)");
