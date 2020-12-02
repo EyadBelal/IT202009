@@ -17,6 +17,9 @@ if (isset($_GET["id"])) {
 echo "The Item you have chosen is:";
 ?>
 <?php
+echo "The product you have chosen is :";
+?>
+<?php
 //fetching
 $result = [];
 if (isset($id)) {
@@ -38,6 +41,8 @@ if (isset($id)) {
         <div class="card-body">
             <div>
                 <p>This Product's Information:</p>
+
+                <p>This product's Information: </p>
                 <div>Description: <?php safer_echo($result["description"]); ?></div>
                 <div>Price: <?php safer_echo($result["price"]); ?></div>
                 <div>Stock: <?php safer_echo($result["quantity"]); ?></div>
