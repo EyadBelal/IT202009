@@ -5,6 +5,7 @@ CREATE TABLE Products
     quantity    int            default 0,
     price       decimal(10, 2) default 0.00,
     description TEXT,
+    category TEXT,
     modified    TIMESTAMP       default current_timestamp on update current_timestamp,
     created     TIMESTAMP       default current_timestamp,
     user_id     int,

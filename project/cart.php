@@ -1,5 +1,37 @@
 <?php require_once(__DIR__ . "/partials/nav.php"); ?>
 <?php
+
+if (!is_logged_in()) {
+    //Is not logged in
+    flash("You don't have permission to access this page");
+    die(header("Location: login.php"));
+}
+?>
+<?php
+$db = getDB();
+$stmt = $db->prepare("SELECT id,name from Products LIMIT 10");
+$r = $stmt->execute();
+$products = $stmt->fetchAll(PDO::FETCH_ASSOC);
+?>
+    <h3>Cart</h3>
+    <form method="POST">
+        <label>Name</label>
+        <select name="name">
+            <option> <value="-1">Name</option>
+            <?php foreach ($products as $product): ?>
+                <option> <value="<?php safer_echo($product["name"]); ?>"><?php safer_echo($product["name"]); ?></option>
+            <?php endforeach; ?>
+        </select></br>
+        <label>Product ID</label>
+        <select name="product_id">
+            <option> <value="-1">None</option>
+            <?php foreach ($products as $product): ?>
+                <option> <value="$product["id"]"><?php safer_echo($product["name"]); ?>:  <?php safer_echo($product["id"]); ?></option>
+            <?php endforeach; ?>
+        </select></br>
+        <label>Quantity</label>
+        <input type="number" min="0" max="10" name="quantity"/></br>
+        <input type="submit" name="save" value="Add to Cart"/>
 //only let's users access their cart if logged in
 if (!is_logged_in()) {
     flash("You must be logged in to access this page");
@@ -29,6 +61,23 @@ $products = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
 <?php
 if (isset($_POST["save"])) {
+
+    //TODO add proper validation/checks
+    $name = $_POST["name"];
+    $quantity = $_POST["quantity"];
+    $product_id = substr($_POST["product_id"],-2);
+    $price = getQuantityPrice($quantity, $product_id);
+    $user = get_user_id();
+    $db = getDB();
+    $stmt = $db->prepare("INSERT INTO Cart (product_id, price, quantity, user_id) VALUES(:product_id, :price, :quantity,:user)");
+    $r = $stmt->execute([
+        ":product_id" => $product_id,
+        ":price" => $price,
+        ":quantity" => $quantity,
+        ":user" => $user
+    ]);
+    if ($r) {
+        flash("Total price for ".$quantity." ".$name." is: $".$price);
     if(isset($_POST["product_id"])){
         $id = $_POST["product_id"];
         $db = getDB();
@@ -58,6 +107,9 @@ if (isset($_POST["save"])) {
     }
 }
 ?>
+
+<?php require(__DIR__ . "/partials/flash.php");
+
 
 <?php
 //below will display the cart contents for the user to see
@@ -174,3 +226,4 @@ if(isset($_POST["clear"])){
 }
 ?>
 <?php require(__DIR__ . "/partials/flash.php");
+

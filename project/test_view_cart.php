@@ -17,9 +17,11 @@ if (isset($_GET["id"])) {
 $result = [];
 if (isset($id)) {
     $db = getDB();
-    $stmt = $db->prepare("SELECT Cart.id,Cart.product_id,Cart.quantity,Cart.price, Users.username, Product.name FROM Cart  JOIN Users on Cart.user_id = Users.id LEFT JOIN Products  on Product.id = Cart.product_id WHERE Cart.id = :id");
-    //    $stmt = $db->prepare("SELECT Cart.*,Products.name, Users.username from Cart JOIN Users on Users.id = Cart.user_id JOIN Products on Products.id = Cart.product_id WHERE Cart.id like :q LIMIT 10");
-    $r = $stmt->execute([":id" => $id]);
+    //$stmt = $db->prepare("SELECT Cart.id,Cart.product_id,Cart.quantity,Cart.price, Users.username, Product.name FROM Cart  JOIN Users on Cart.user_id = Users.id LEFT JOIN Products  on Product.id = Cart.product_id WHERE Cart.id = :id");
+    //$stmt = $db->prepare("SELECT Cart.*,Products.name, Users.username from Cart JOIN Users on Users.id = Cart.user_id JOIN Products on Products.id = Cart.product_id WHERE Cart.id like :q LIMIT 10");
+    $stmt = $db->prepare("SELECT Cart.price, Products.name,Products.description, Cart.quantity from Cart join Products on Cart.product_id = product_id where Cart.id = :id");
+ 
+   $r = $stmt->execute([":id" => $id]);
     $result = $stmt->fetch(PDO::FETCH_ASSOC);
     if (!$result) {
         $e = $stmt->errorInfo();

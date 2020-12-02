@@ -31,6 +31,25 @@ function get_email() {
     }
     return "";
 }
+function getQuantityPrice($quantity,$id){
+
+    $db = getDB();
+    $stmt = $db->prepare("SELECT price FROM Products WHERE id=:id");
+    $r = $stmt->execute([
+    ":id" => $id,
+    ]);
+    $result = $stmt->fetch(PDO::FETCH_ASSOC);
+    if (!$result) {
+        $e = $stmt->errorInfo();
+        flash($e[2]);
+    }
+    
+    $pr = $result["price"];
+    
+    $total = $pr*$quantity;
+    return $total;
+
+}
 
 function get_user_id() {
     if (is_logged_in() && isset($_SESSION["user"]["id"])) {
@@ -75,6 +94,13 @@ $r = $stmt->execute([":id" => $id]);
 $product = $stmt->fetch(PDO::FETCH_ASSOC);
 $price = $product["price"] * $quantity;
 return $price;
+}
+
+function getURL($path) {
+    if (substr($path, 0, 1) == "/") {
+        return $path;
+    }
+    return $_SERVER["CONTEXT_PREFIX"] . "/repo/project/$path";
 }
 
 //end flash
