@@ -42,8 +42,6 @@ if(isset($_POST["save"])){
         ":price"=>$price,
         ":description"=>$description,
 
-
-
     ]);
     if($r){
         flash("Created successfully with id: " . $db->lastInsertId());
@@ -54,4 +52,8 @@ if(isset($_POST["save"])){
     }
 }
 ?>
+
 <?php require(__DIR__ . "/partials/flash.php");
+
+<?php require(__DIR__ . "/partials/flash.php");
+
