@@ -31,6 +31,9 @@ $products = $stmt->fetchAll(PDO::FETCH_ASSOC);
         </select></br>
         <label>Quantity</label>
         <input type="number" min="0" max="10" name="quantity"/></br>
+<<<<<<< HEAD
+        <input type="submit" name="save" value="ADD TO CART"/>
+=======
         <input type="submit" name="save" value="Add to Cart"/>
 //only let's users access their cart if logged in
 if (!is_logged_in()) {
@@ -57,6 +60,7 @@ $products = $stmt->fetchAll(PDO::FETCH_ASSOC);
         <label>Quantity</label>
         <input name="quantity" type="number"/>
         <input type="submit" name="save" value="Submit"/>
+>>>>>>> ec22c42e7e1d52cae39aca13959c0e6d3e8e7a40
     </form>
 
 <?php
@@ -71,6 +75,7 @@ if (isset($_POST["save"])) {
     $db = getDB();
     $stmt = $db->prepare("INSERT INTO Cart (product_id, price, quantity, user_id) VALUES(:product_id, :price, :quantity,:user)");
     $r = $stmt->execute([
+        
         ":product_id" => $product_id,
         ":price" => $price,
         ":quantity" => $quantity,

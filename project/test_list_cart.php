@@ -1,51 +1,187 @@
 <?php require_once(__DIR__ . "/partials/nav.php"); ?>
 <?php
+//only let's users access their cart if logged in
 if (!is_logged_in()) {
-    //Is not logged in
-    flash("You don't have permission to access this page");
+    flash("You must be logged in to access this page");
     die(header("Location: login.php"));
 }
-?>
-<?php
+
+//updating item quantity
+if (isset($_POST["update"]) && isset($_POST["quantity"])) {
+    $productID = $_POST["update"];
+    $newQuantity = $_POST["quantity"];
+    $userID = get_user_id();
+    $db = getDB();
+
+    //remove if quantity set to 0
+    if ($newQuantity == 0) {
+        $stmt = $db->prepare("DELETE FROM Cart where user_id=:id AND product_id=:pid");
+        $r = $stmt->execute([":pid" => $productID, ":id" => $userID]);
+        if ($r) {
+            flash("Removed item from cart");
+        }
+    } else { //updates quantity
+        $stmt = $db->prepare("UPDATE Cart SET quantity=:quantity WHERE user_id=:id AND product_id=:pid");
+        $r = $stmt->execute([":quantity" => $newQuantity, ":id" => $userID, ":pid" => $productID]);
+        if ($r) {
+            flash("Updated quantity");
+        }
+    }
+}
+
+//removes product from cart
+if (isset($_POST["remove"])) {
+    $productID = $_POST["remove"];
+    $userID = get_user_id();
+    $db = getDB();
+    $stmt = $db->prepare("DELETE FROM Cart where user_id=:id AND product_id=:pid");
+    $r = $stmt->execute([":pid" => $productID, ":id" => $userID]);
+    if ($r) {
+        flash("Removed item from cart");
+    }
+}
+
+//clears entire cart
+if (isset($_POST["clear"])) {
+    $userID = get_user_id();
+    $db = getDB();
+    $stmt = $db->prepare("DELETE FROM Cart where user_id=:id");
+    $r = $stmt->execute([":id" => $userID]);
+    if ($r) {
+        flash("Cart emptied");
+    }
+}
+
+
+//gets products for dropdown
 $db = getDB();
-$stmt = $db->prepare("SELECT Cart.product_id,Cart.price, Cart.quantity, Cart.user_id, Users.username FROM Cart JOIN Users on Cart.user_id = Users.id LEFT JOIN Products on Products.id = Cart.product_id");
+$stmt = $db->prepare("SELECT id,name,price,visibility from Products WHERE visibility != 0 LIMIT 10");
 $r = $stmt->execute();
-$results = $stmt->fetchAll(PDO::FETCH_ASSOC);
+$products = $stmt->fetchAll(PDO::FETCH_ASSOC);
+?>
 
-$total=0;
+    <h3>Add to Cart</h3>
+    <form method="POST">
+        <br>
+        <label>Select a Product</label>
+        <br>
+        <select name="product_id">
+            <option value="-1">None</option>
+            <?php foreach ($products as $product): ?>
+                <option value="<?php safer_echo($product["id"]); ?>"> <?php safer_echo($product["name"]." $".$product["price"]);?> </option>
+            <?php endforeach; ?>
+        </select>
+        <br>
+        <label>Quantity</label>
+        <br>
+        <input name="quantity" type="number" value="1"/>
+        <br>
+        <button id="atc" type="submit" name="save" value="Submit">Add to Cart</button>
+    </form>
 
-foreach($results as $p){
+<?php
+if (isset($_POST["save"])) {
+    if(isset($_POST["product_id"])){
+        $id = $_POST["product_id"];
+        $db = getDB();
+        $stmt = $db->prepare("SELECT id,price from Products WHERE id=:id");
+        $r = $stmt->execute([":id" => $id]);
+        $productSelection = $stmt->fetch(PDO::FETCH_ASSOC);
+    }
 
-    $total+=$p["price"];
-
+    $id = $_POST["product_id"];
+    $quantity = $_POST["quantity"];
+    $price = $productSelection["price"];
+    $user = get_user_id();
+    $db = getDB();
+    $stmt = $db->prepare("INSERT INTO Cart (product_id, quantity, price, user_id) VALUES(:id, :quantity, :price, :user)");
+    $r = $stmt->execute([
+        ":id" => $id,
+        ":quantity" => $quantity,
+        ":price" => $price,
+        ":user" => $user
+    ]);
+    if ($r) {
+        flash("Successfully added to cart.");
+    }
+    else {
+        $e = $stmt->errorInfo();
+        flash("Error creating: " . var_export($e, true));
+    }
 }
 ?>
 
-    <h3>View Cart</h3>
-    <div class="card">
-        <?php foreach ($results as $p): ?>
-
-            <div class="card-title"><br>
-                <a type="button" href="test_view_shop.php?id=<?php safer_echo($p['product_id']); ?>"><?php safer_echo($p["name"]); ?></a>
+<?php
+//below will display the cart contents for the user to see
+$userID = get_user_id();
+$db = getDB();
+$stmt = $db->prepare("SELECT c.id,c.product_id,c.quantity,c.price, Product.name as product FROM Cart as c JOIN Users on c.user_id = Users.id LEFT JOIN Products Product on Product.id = c.product_id where c.user_id = :id ORDER by product");
+$r = $stmt->execute([":id" => $userID]);
+$results = $stmt->fetchAll(PDO::FETCH_ASSOC);
+?>
+    <div class="results">
+        <div class="list-group">
+            <div>
+                <div><h3>Cart Contents</h3></div>
             </div>
-            <div class="card-body">
-                <div>
-                    <div>Quantity: <?php safer_echo($p["quantity"]); ?></div>
-                    <div>Subtotal: <?php safer_echo($p["price"]); ?></div>
-                    <div>Product ID: <?php safer_echo($p["product_id"]); ?></div>
-                    <div>Owned by: <?php safer_echo($p["username"]); ?></div>
+            <div>
+                <br>
+            </div>
+            <?php
+            if(empty($results)){safer_echo("Seems like your cart is empty. Buy something :)");echo("<br>");}
+            $cartTotal = 0;
+            foreach ($results as $product):?>
+                <div class="list-group-item">
                     <div>
-                        <a type="button" name="edit" href="test_edit_shop.php.php?id=<?php safer_echo($p['product_id']); ?>">Edit</a>
-                        <a type="button" name="delete" href="delete_product_cart.php?id=<?php safer_echo($p['product_id']); ?>">Delete</a>
+                        <div><h4><u><?php safer_echo($product["product"]); ?></u></h4></div>
+                    </div>
+                    <div>
+                        <div>Quantity: <?php safer_echo($product["quantity"]); ?></div>
+                    </div>
+                    <div>
+                        <div>Price: $<?php safer_echo($product["price"]); ?></div>
+                    </div>
+                    <div>
+                        <div>Subtotal: $<?php safer_echo($product["price"]*$product["quantity"]); $cartTotal+=$product["price"]*$product["quantity"]; ?></div>
+                    </div>
+                    <div>
+                        <a type="button" href="productView.php?id=<?php safer_echo($product["product_id"]); ?>">View</a>
+                        <br><br>
+                        <form method="POST">
+                            <br>
+                            <label>Change Quantity</label>
+                            <br>
+                            <input name="quantity" type="number"/>
+                            <br>
+                            <button type="submit" value="<?php safer_echo($product["product_id"]);?>" name="update">Update</button>
+                        </form>
+                    </div>
+                    <div>
+                        <form method="POST">
+                            <button type="submit" value="<?php safer_echo($product["product_id"]);?>" name="remove">Remove</button>
+                        </form>
+                    </div>
+                    <div>
+                        <br>
                     </div>
                 </div>
-            </div>
-        <?php endforeach; ?>
-        <div class="total"><br>Total: $<?php safer_echo($total); ?></div>
-        <div class="card-title">
-            <div>
-                <a type="button" name="delete" href="delete_cart.php?id=<?php safer_echo($p['user_id']); ?>">Clear Cart</a>
-            </div>
+            <?php endforeach; ?>
+        </div>
+        <div>
+            <div><b>Total Cart Value: $<?php safer_echo($cartTotal); ?></b></div>
+        </div>
+        <div>
+            <div><br></div>
         </div>
     </div>
+
+    <form method="POST">
+        <button id="clear" type="submit" name="clear">Clear</button>
+    </form>
+
+    <br>
+    <?php if(!empty($results)):?>
+    <a type="button" href="checkout.php">Proceed to Checkout</a>
+    <?php endif;?>
+    <br><br>
 <?php require(__DIR__ . "/partials/flash.php");
