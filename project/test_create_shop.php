@@ -55,4 +55,7 @@ if(isset($_POST["save"])){
 
 <?php require(__DIR__ . "/partials/flash.php");
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> ec22c42e7e1d52cae39aca13959c0e6d3e8e7a40
