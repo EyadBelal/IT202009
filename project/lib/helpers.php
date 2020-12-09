@@ -103,5 +103,26 @@ function getURL($path) {
     return $_SERVER["CONTEXT_PREFIX"] . "/repo/project/$path";
 }
 
+function deleteRow($id)
+{	
+    $db = getDB();
+    $stmt = $db->prepare("DELETE FROM Carts WHERE product_id=$id");
+    $r = $stmt->execute();
+    if($r)
+      return true;
+    else
+      return false;
+}
+function clearCart($id)
+{	
+    $db = getDB();
+    $stmt = $db->prepare("DELETE FROM Carts WHERE user_id=$id");
+    $r = $stmt->execute();
+    if($r)
+      return true;
+    else
+      return false;
+}
+
 //end flash
 ?>
