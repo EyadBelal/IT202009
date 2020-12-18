@@ -13,6 +13,7 @@ if (!has_role("Admin")) {
     $r = $stmt->execute([]);
     $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
 }
+
 ?>
 <div class="results">
         <div class="list-group">
@@ -37,6 +38,18 @@ if (!has_role("Admin")) {
                         <br>
                     </div>
                 </div>
+
             <?php endforeach; ?>
         </div>
 </div>
+<nav aria-label="Page navigation example">
+  <ul class="pagination">
+    <li class="page-item"><a class="page-link" href="#">Previous</a></li>
+    <li class="page-item"><a class="page-link" href="#">1</a></li>
+    <li class="page-item"><a class="page-link" href="#">2</a></li>
+    <li class="page-item"><a class="page-link" href="#">3</a></li>
+    <li class="page-item"><a class="page-link" href="#">Next</a>
+  </ul>
+</nav>
+
+

@@ -40,8 +40,6 @@ if (isset($id)) {
         </div>
         <div class="card-body">
             <div>
-                <p>This Product's Information:</p>
-
                 <p>This product's Information: </p>
                 <div>Description: <?php safer_echo($result["description"]); ?></div>
                 <div>Price: <?php safer_echo($result["price"]); ?></div>
@@ -52,4 +50,24 @@ if (isset($id)) {
 <?php else: ?>
     <p>Error looking up id...</p>
 <?php endif; ?>
+<form method="POST">
+              <div class="card">
+                <div class="card-body">
+                  <h3 class="card-title">Please let us know your experience.Review our Product!</h3>
+                  <label for="exampleFormControlInput1" class="form-label"></label>
+                  <input type="text" name="review" class="form-control" id="exampleFormControlInput1" placeholder="amazing product!" required>
+                  <select class="form-control" id="quantity" name="stars" style= "width: 50;">
+                    <option>1</option>
+                    <option>2</option>
+                    <option>3</option>
+                    <option>4</option>
+                    <option>5</option>
+                  </select>
+                  <button type="submit" name = "reviewButton" class="btn btn-primary btn-lg">submit review</button>
+                <div>
+              </div>
+            </form>
+
+
 <?php require(__DIR__ . "/partials/flash.php");
+

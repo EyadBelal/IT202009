@@ -114,7 +114,7 @@ if(isset($_POST["go"])){
     <?php elseif($cateCheck): ?>
         <label>Select Category</label>
         <select name="category">
-            <option> <value="-1">None</option>
+            <option> <value="-1">Gaming Hardware</option>
             <?php foreach ($categories as $product): ?>
                 <option> <value="$product"><?php safer_echo($product); ?></option>
             <?php endforeach; ?>
@@ -152,6 +152,5 @@ if(isset($_POST["go"])){
             <?php endforeach; ?>
         </div>
     <?php else: ?>
-        <p>No results</p>
     <?php endif; ?>
 </div>

@@ -39,6 +39,21 @@ if (isset($_POST["saved"])) {
             $newEmail = $email;
         }
     }
+if (!empty($_POST["password"]) && !empty($_POST["confirm"])) {
+            if ($_POST["password"] == $_POST["confirm"]) {
+                $password = $_POST["password"];
+                $hash = password_hash($password, PASSWORD_BCRYPT);
+                //this one we'll do separate
+                $stmt = $db->prepare("UPDATE Users set password = :password where id = :id");
+                $r = $stmt->execute([":id" => get_user_id(), ":password" => $hash]);
+                if ($r) {
+                    flash("Reset Password");
+                }
+                else {
+                    flash("Error resetting password");
+                }
+            }
+        }
     $newUsername = get_username();
     if (get_username() != $_POST["username"]) {
         $username = $_POST["username"];
@@ -109,6 +124,7 @@ if (isset($_POST["saved"])) {
 
 ?>
 
+
     <form method="POST">
         <label for="email">Email</label>
         <input type="email" name="email" value="<?php safer_echo(get_email()); ?>"/>
@@ -119,6 +135,13 @@ if (isset($_POST["saved"])) {
         <input type="password" name="password"/>
         <label for="cpw">Confirm Password</label>
         <input type="password" name="confirm"/>
-        <input type="submit" name="saved" value="Save Profile"/>
+<label for="type">Change Account Type:</label>
+        <br>
+        <select name="account_type" id="type">
+            <option value="public">Public</option>
+            <option value="private">Private</option>
+        </select>
+        <br><br>
+        <button type="submit" name="saved" value="Save Profile">Update</button>
     </form>
 <?php require(__DIR__ . "/partials/flash.php");
