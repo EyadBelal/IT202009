@@ -19,7 +19,7 @@ require_once(__DIR__ . "/../lib/helpers.php");
             <li><a href="test_list_cart.php">View Cart</a></li>
         <?php endif; ?>
         <?php if (is_logged_in()): ?>
-             <li><a href="profile.php">Profile</a></li>
+            <li><a href="profile.php">Profile</a></li>
             <li><a href="catalog.php">Catalog</a></li>
             <li><a href="search.php">Search</a></li>
             <li><a href="cart.php">Cart</a></li>  

@@ -34,13 +34,14 @@ if(isset($_POST["save"])){
     $db = getDB();
 
 
-    $stmt = $db->prepare("INSERT INTO Products (name, quantity, price, description, user_id) VALUES(:name, :quantity, :price, :description)");
+    $stmt = $db->prepare("INSERT INTO Products (name, quantity, price, description, user_id) VALUES(:name, :quantity, :price, :description, :user_id)");
 
     $r = $stmt->execute([
         ":name"=>$name,
         ":quantity"=>$quantity,
         ":price"=>$price,
         ":description"=>$description,
+	":user_id"=>$user,
 
     ]);
     if($r){
@@ -55,7 +56,3 @@ if(isset($_POST["save"])){
 
 <?php require(__DIR__ . "/partials/flash.php");
 
-<<<<<<< HEAD
-
-=======
->>>>>>> ec22c42e7e1d52cae39aca13959c0e6d3e8e7a40

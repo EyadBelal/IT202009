@@ -1,11 +1,11 @@
 <?php require_once(__DIR__ . "/partials/nav.php"); ?>
-    <form method="POST">
-        <label for="email">Email:</label>
-        <input type="email" id="email" name="email" required/>
-        <label for="p1">Password:</label>
-        <input type="password" id="p1" name="password" required/>
-        <input type="submit" name="login" value="Login"/>
-    </form>
+<form method="POST">
+    <label for="email">Email:</label>
+    <input type="user" id="email" name="email" required/> 
+    <label for="p1">Password:</label>
+    <input type="password" id="p1" name="password" required/>
+    <input type="submit" name="login" value="Login"/>
+</form>
 
 <?php
 if (isset($_POST["login"])) {
@@ -20,24 +20,23 @@ if (isset($_POST["login"])) {
     $isValid = true;
     if (!isset($email) || !isset($password)) {
         $isValid = false;
-        flash("Email or password missing");
+        
     }
-    if (!strpos($email, "@")) {
+  /*  elseif (isset($email) && !isset($username) && !strpos($email, "@")) {
         $isValid = false;
-        //echo "<br>Invalid email<br>";
-        flash("Invalid email");
-    }
+        echo "<br>Invalid email<br>";
+    }*/
     if ($isValid) {
         $db = getDB();
         if (isset($db)) {
-            $stmt = $db->prepare("SELECT id, email, username, password from Users WHERE email = :email LIMIT 1");
-
+            
+            $stmt = $db->prepare("SELECT id, email, username, password from Users WHERE email = :email OR username = :email LIMIT 1");
             $params = array(":email" => $email);
+            
             $r = $stmt->execute($params);
-            //echo "db returned: " . var_export($r, true);
+        //    echo "db returned: " . var_export($r, true);
             $e = $stmt->errorInfo();
             if ($e[0] != "00000") {
-                //echo "uh oh something went wrong: " . var_export($e, true);
                 flash("Something went wrong, please try again");
             }
             $result = $stmt->fetch(PDO::FETCH_ASSOC);
